@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Cleaning Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #F5F0E8;
+    --tan: #C9A87C;
+    --tan-light: #E8D5B7;
+    --tan-dark: #9E7A52;
+    --brown: #5C3D2E;
+    --brown-light: #8B6355;
+    --text: #2C1F14;
+    --text-muted: #7A6355;
+    --green: #6B8F71;
+    --green-light: #EAF2EB;
+    --shadow: 0 4px 24px rgba(92,61,46,0.10);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  header {
+    background: var(--brown);
+    padding: 36px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(201,168,124,0.06) 40px,
+      rgba(201,168,124,0.06) 80px
+    );
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--tan-light);
+    font-size: 2rem;
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+
+  header p {
+    color: var(--tan);
+    font-size: 0.85rem;
+    margin-top: 6px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  .progress-bar-wrap {
+    background: var(--warm-white);
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--tan-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(92,61,46,0.07);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--tan-light);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--tan-dark), var(--tan));
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+
+  .sections {
+    padding: 24px 16px 0;
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .section {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--tan-light);
+    transition: opacity 0.3s;
+  }
+
+  .section-header {
+    background: var(--warm-white);
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--tan-light);
+    user-select: none;
+    gap: 12px;
+  }
+
+  .section-header:hover { background: var(--tan-light); transition: background 0.2s; }
+
+  .section-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .section-icon {
+    font-size: 1.3rem;
+    width: 36px;
+    height: 36px;
+    background: var(--tan-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--brown);
+    font-weight: 600;
+  }
+
+  .section-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .section-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 99px;
+    background: var(--tan-light);
+    color: var(--tan-dark);
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .section-badge.done {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  .chevron {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .section.open .chevron { transform: rotate(180deg); }
+
+  .section-body {
+    display: none;
+    padding: 0;
+  }
+
+  .section.open .section-body { display: block; }
+
+  .task {
+    border-bottom: 1px solid var(--warm-white);
+    transition: background 0.15s;
+  }
+
+  .task:last-child { border-bottom: none; }
+
+  .task-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px 14px;
+    cursor: pointer;
+  }
+
+  .task-header:hover { background: #FDFAF6; }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--tan);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: white;
+  }
+
+  .task.checked .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .checkmark {
+    color: white;
+    font-size: 0.75rem;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s;
+  }
+
+  .task.checked .checkmark {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .task-text {
+    flex: 1;
+  }
+
+  .task-name {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+
+  .task.checked .task-name {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--tan);
+  }
+
+  .task-product {
+    font-size: 0.75rem;
+    color: var(--tan-dark);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  .expand-btn {
+    font-size: 0.7rem;
+    color: var(--tan-dark);
+    background: var(--warm-white);
+    border: none;
+    border-radius: 99px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: background 0.15s;
+  }
+
+  .expand-btn:hover { background: var(--tan-light); }
+
+  .instructions {
+    display: none;
+    background: #FDFAF6;
+    border-top: 1px solid var(--warm-white);
+    padding: 14px 20px 16px 56px;
+  }
+
+  .instructions.open { display: block; }
+
+  .instructions ol {
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .instructions li {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .instructions li strong {
+    color: var(--brown-light);
+    font-weight: 500;
+  }
+
+  .tip {
+    margin-top: 10px;
+    background: var(--tan-light);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.78rem;
+    color: var(--tan-dark);
+    line-height: 1.5;
+  }
+
+  .tip::before { content: '💡 '; }
+
+  .all-done {
+    display: none;
+    text-align: center;
+    padding: 36px 24px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--tan-light);
+    margin: 0 16px;
+  }
+
+  .all-done.show { display: block; }
+
+  .all-done h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--brown);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+
+  .all-done p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .reset-btn {
+    margin-top: 18px;
+    background: var(--brown);
+    color: var(--tan-light);
+    border: none;
+    border-radius: 99px;
+    padding: 10px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.2s;
+  }
+
+  .reset-btn:hover { background: var(--brown-light); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Home Deep Clean</h1>
+  <p>Tap a task to check it off · Tap "Steps" for instructions</p>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-label">
+    <span>Progress</span>
+    <span id="progress-text">0 of 0 tasks complete</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+</div>
+
+<div class="sections" id="sections">
+
+  <!-- WINDOWSILLS -->
+  <div class="section open" data-section="windowsills">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🪟</div>
+        <div>
+          <div class="section-title">Windowsills</div>
+          <div class="section-meta">Mold removal + prevention</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-windowsills">0/3</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="w1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Clean & kill the mold</div>
+            <div class="task-product">Concrobium Mold Control + stiff bristle brush</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Ventilate:</strong> Open a nearby window and put on your N95 mask and rubber gloves.</li>
+            <li><strong>Spray:</strong> Apply Concrobium directly to the mold on the windowsill, coating fully.</li>
+            <li><strong>Wait:</strong> Let it sit for 10–15 minutes.</li>
+            <li><strong>Scrub:</strong> Use the stiff bristle brush to scrub the affected area, focusing on corners.</li>
+            <li><strong>Wipe clean:</strong> Wipe away residue with a damp cloth.</li>
+            <li><strong>Dry completely:</strong> Let the surface dry fully before priming — this is critical.</li>
+          </ol>
+          <div class="tip">Concrobium leaves an antimicrobial barrier as it dries — don't rinse it off completely.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="w2">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Apply Zinsser Mold Blocking Primer</div>
+            <div class="task-product">Zinsser spray primer</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Confirm surface is dry:</strong> The windowsill must be completely dry before priming.</li>
+            <li><strong>Shake well:</strong> Shake the can for 60 seconds before spraying.</li>
+            <li><strong>Spray evenly:</strong> Hold 10–12 inches away and apply a thin, even coat over the cleaned area.</li>
+            <li><strong>Dry time:</strong> Allow 30 minutes to dry. Apply a second coat if needed.</li>
+            <li><strong>Paint over:</strong> Once dry, paint over with your regular wall paint to finish.</li>
+          </ol>
+          <div class="tip">Keep the room ventilated — the primer has strong fumes. Keep kids out until fully dry.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="w3">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Address moisture source</div>
+            <div class="task-product">Window insulation kit or dehumidifier</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Check weatherstripping:</strong> Inspect window seals — replace if cracked or compressed.</li>
+            <li><strong>Consider a window insulation kit:</strong> Plastic film kits reduce condensation significantly in Minnesota winters.</li>
+            <li><strong>Use a dehumidifier nearby:</strong> Keeping humidity below 50% prevents recurrence.</li>
+            <li><strong>Wipe sills regularly:</strong> A quick weekly wipe during winter months catches moisture before it becomes mold.</li>
+          </ol>
+          <div class="tip">The mold will come back without fixing the moisture source — this step matters as much as the cleaning.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SHOWER GROUT -->
+  <div class="section" data-section="grout">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🚿</div>
+        <div>
+          <div class="section-title">Shower Grout</div>
+          <div class="section-meta">Deep mildew removal</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-grout">0/2</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="g1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Apply CLR foaming cleaner & scrub</div>
+            <div class="task-product">CLR Mold & Mildew Foaming Stain Remover + grout brush</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Ventilate:</strong> Turn on the bathroom fan and open a window if possible.</li>
+            <li><strong>Apply foam:</strong> Spray CLR foam directly onto grout lines — the foam clings to vertical surfaces.</li>
+            <li><strong>Wait:</strong> Let sit for 10–15 minutes. Don't let it dry completely.</li>
+            <li><strong>Scrub:</strong> Use the grout brush in firm back-and-forth strokes along each grout line.</li>
+            <li><strong>Rinse thoroughly:</strong> Rinse with warm water until all product is removed.</li>
+            <li><strong>Repeat if needed:</strong> Severe staining may need 2–3 rounds.</li>
+          </ol>
+          <div class="tip">A grout brush makes a massive difference — a regular scrub brush won't get into the grout lines effectively.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="g2">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Restore grout color if still discolored</div>
+            <div class="task-product">Grout pen or Polyblend Grout Renew (if needed)</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Assess after cleaning:</strong> If grout is still deeply discolored after scrubbing, a grout pen is your best option.</li>
+            <li><strong>Let grout dry fully:</strong> Wait 24 hours after cleaning before applying any colorant.</li>
+            <li><strong>Apply grout pen:</strong> Run the pen along each grout line in one smooth pass.</li>
+            <li><strong>Wipe tile faces:</strong> Immediately wipe any product off the tile surface with a damp cloth.</li>
+            <li><strong>Allow to cure:</strong> Let dry fully before using the shower (usually 2–4 hours).</li>
+          </ol>
+          <div class="tip">Grout pens work best on white or light gray grout — they essentially restore the original color and reseal at the same time.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TUB -->
+  <div class="section" data-section="tub">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🛁</div>
+        <div>
+          <div class="section-title">Bathtub</div>
+          <div class="section-meta">Yellow mineral deposit removal</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-tub">0/1</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="t1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Remove yellow mineral deposits</div>
+            <div class="task-product">Bar Keepers Friend + non-scratch sponge</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Wet the surface:</strong> Lightly wet the tub floor.</li>
+            <li><strong>Apply Bar Keepers Friend:</strong> Sprinkle powder (or spray) directly onto the yellow spots.</li>
+            <li><strong>Let sit:</strong> Wait 1–2 minutes — don't let it dry.</li>
+            <li><strong>Scrub gently:</strong> Use a non-scratch sponge in circular motions. Do NOT use abrasive scrubbers — they'll permanently scratch acrylic.</li>
+            <li><strong>Rinse well:</strong> Rinse completely and assess. Repeat for stubborn spots.</li>
+            <li><strong>Escalate if needed:</strong> If spots remain, apply CLR (5 min max on acrylic) then rinse immediately.</li>
+          </ol>
+          <div class="tip">Never use steel wool or scotch brite on acrylic — once scratched, it's permanent. Soft cloth or non-scratch sponge only.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOILETS -->
+  <div class="section" data-section="toilets">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🚽</div>
+        <div>
+          <div class="section-title">Toilets (×5)</div>
+          <div class="section-meta">Rust rings, under-rim buildup & prevention</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-toilets">0/3</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="to1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Deep clean under the rim</div>
+            <div class="task-product">CLR Toilet Bowl Cleaner + toilet brush</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Apply CLR:</strong> Squeeze CLR under the rim, letting it flow down into the bowl.</li>
+            <li><strong>Coat the bowl:</strong> Apply around the waterline and sides of the bowl as well.</li>
+            <li><strong>Wait 15–20 minutes:</strong> Allow CLR to break down mineral and manganese deposits.</li>
+            <li><strong>Scrub thoroughly:</strong> Use the toilet brush to scrub under the rim jets and around the bowl.</li>
+            <li><strong>Flush to rinse:</strong> Flush 1–2 times to clear.</li>
+            <li><strong>Repeat on all 5 toilets.</strong></li>
+          </ol>
+          <div class="tip">The black buildup under the rim is manganese — CLR is specifically effective against it. Let it sit the full time.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="to2">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Remove waterline rust rings</div>
+            <div class="task-product">Pumie Toilet Bowl Ring Remover</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Wet the Pumie stick:</strong> Dip it in the toilet water to wet it before use.</li>
+            <li><strong>Scrub the ring:</strong> Rub the Pumie along the rust/mineral ring with light, even pressure — it works like an eraser.</li>
+            <li><strong>Keep both surfaces wet:</strong> Rewet the Pumie and ring regularly while scrubbing.</li>
+            <li><strong>Rinse and assess:</strong> Flush and check — repeat as needed for stubborn rings.</li>
+            <li><strong>Repeat on all 5 toilets.</strong></li>
+          </ol>
+          <div class="tip">Pumie is safe on porcelain but don't use it on plastic toilet seats. Light pressure is enough — let the pumice do the work.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="to3">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Add Iron Out prevention tabs</div>
+            <div class="task-product">Iron Out Automatic Toilet Bowl Cleaner</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Place one tab in each tank:</strong> Drop one Iron Out tab into the toilet tank (not the bowl) of each toilet.</li>
+            <li><strong>Do not use in bowl directly:</strong> The tab goes in the tank so it treats each flush.</li>
+            <li><strong>Replace as directed:</strong> Typically every 30–45 days depending on use frequency.</li>
+          </ol>
+          <div class="tip">For rarely used toilets, flush them every few days even if unused — stagnant water is what accelerates the buildup.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DRAINS -->
+  <div class="section" data-section="drains">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🌀</div>
+        <div>
+          <div class="section-title">Bathroom Sink Drains</div>
+          <div class="section-meta">Mildew odor elimination</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-drains">0/1</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="d1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Treat drains for biofilm & odor</div>
+            <div class="task-product">Drano Max Build Up Remover</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Do not use a plunger beforehand:</strong> Use on slow or smelly drains — not fully clogged ones.</li>
+            <li><strong>Pour as directed:</strong> Pour the recommended amount slowly down each drain.</li>
+            <li><strong>Wait overnight:</strong> The enzyme formula works best with a long dwell time — ideally 6–8 hours.</li>
+            <li><strong>Flush with hot water:</strong> In the morning, run hot water for 2–3 minutes to flush.</li>
+            <li><strong>Repeat monthly:</strong> Use once a month as maintenance to prevent biofilm from rebuilding.</li>
+          </ol>
+          <div class="tip">The smell is from biofilm — hair, soap scum, and bacteria coating the inside of the pipe. Enzymes break it down without harsh chemicals.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WASHING MACHINE -->
+  <div class="section" data-section="washer">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-left">
+        <div class="section-icon">🫧</div>
+        <div>
+          <div class="section-title">Washing Machine</div>
+          <div class="section-meta">Front loader deep clean</div>
+        </div>
+      </div>
+      <span class="section-badge" id="badge-washer">0/2</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+
+      <div class="task" data-id="wm1">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Run Affresh cleaning cycle</div>
+            <div class="task-product">Affresh Washing Machine Cleaner</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Empty the machine:</strong> Make sure there's no laundry inside.</li>
+            <li><strong>Place tablet in drum:</strong> Drop one Affresh tablet directly into the washing machine drum (not the dispenser).</li>
+            <li><strong>Run clean cycle:</strong> Select the "Clean Washer" cycle, or the hottest/longest cycle available.</li>
+            <li><strong>Wipe down after:</strong> Once the cycle finishes, wipe the inside of the drum and door glass with a clean cloth.</li>
+          </ol>
+          <div class="tip">Run Affresh once a month to prevent buildup. The gasket is the main culprit for front loader smell — wipe it out after every wash if possible.</div>
+        </div>
+      </div>
+
+      <div class="task" data-id="wm2">
+        <div class="task-header" onclick="toggleTask(this)">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="task-text">
+            <div class="task-name">Clean the door gasket</div>
+            <div class="task-product">Damp cloth + mild cleaner</div>
+          </div>
+          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
+        </div>
+        <div class="instructions">
+          <ol>
+            <li><strong>Pull back the rubber gasket:</strong> Fold it back to expose the hidden inner lip — this is where mildew hides.</li>
+            <li><strong>Wipe thoroughly:</strong> Use a damp cloth with a little dish soap or diluted white vinegar to wipe all around the inside of the gasket folds.</li>
+            <li><strong>Dry with a clean cloth:</strong> Wipe dry so moisture doesn't sit.</li>
+            <li><strong>Leave door ajar:</strong> After every wash going forward, leave the door cracked open to allow airflow.</li>
+          </ol>
+          <div class="tip">Leaving the door open between washes is the single most effective thing you can do to prevent front loader mildew long-term.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="all-done" id="all-done">
+  <div style="font-size:2.5rem;margin-bottom:12px;">🎉</div>
+  <h2>All done!</h2>
+  <p>Every cleaning task is complete. Your home is going to feel so fresh.</p>
+  <button class="reset-btn" onclick="resetAll()">Start Over</button>
+</div>
+
+<script>
+  const tasks = {};
+  const sectionMap = {
+    windowsills: ['w1','w2','w3'],
+    grout: ['g1','g2'],
+    tub: ['t1'],
+    toilets: ['to1','to2','to3'],
+    drains: ['d1'],
+    washer: ['wm1','wm2']
+  };
+
+  function toggleSection(header) {
+    const section = header.closest('.section');
+    section.classList.toggle('open');
+  }
+
+  function toggleTask(header) {
+    const task = header.closest('.task');
+    const id = task.dataset.id;
+    tasks[id] = !tasks[id];
+    task.classList.toggle('checked', tasks[id]);
+    updateProgress();
+  }
+
+  function toggleInstructions(e, btn) {
+    e.stopPropagation();
+    const task = btn.closest('.task');
+    const instr = task.querySelector('.instructions');
+    instr.classList.toggle('open');
+    btn.textContent = instr.classList.contains('open') ? 'Hide' : 'Steps';
+  }
+
+  function updateProgress() {
+    const allIds = Object.values(sectionMap).flat();
+    const total = allIds.length;
+    const done = allIds.filter(id => tasks[id]).length;
+
+    document.getElementById('progress-text').textContent = `${done} of ${total} tasks complete`;
+    document.getElementById('progress-fill').style.width = `${(done/total)*100}%`;
+
+    for (const [section, ids] of Object.entries(sectionMap)) {
+      const secDone = ids.filter(id => tasks[id]).length;
+      const badge = document.getElementById(`badge-${section}`);
+      badge.textContent = `${secDone}/${ids.length}`;
+      badge.classList.toggle('done', secDone === ids.length);
+    }
+
+    const allDone = document.getElementById('all-done');
+    const sections = document.getElementById('sections');
+    if (done === total) {
+      allDone.classList.add('show');
+      sections.style.display = 'none';
+    } else {
+      allDone.classList.remove('show');
+      sections.style.display = 'flex';
+    }
+  }
+
+  function resetAll() {
+    for (const id in tasks) tasks[id] = false;
+    document.querySelectorAll('.task').forEach(t => t.classList.remove('checked'));
+    document.querySelectorAll('.instructions').forEach(i => i.classList.remove('open'));
+    document.querySelectorAll('.expand-btn').forEach(b => b.textContent = 'Steps');
+    updateProgress();
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
