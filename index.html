@@ -1,836 +1,520 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home Cleaning Checklist</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<h2 class="sr-only">Freezer Meal System — family menu with allergy-aware labels, 20+ meals, recipes, and monthly grocery list</h2>
 <style>
-  :root {
-    --cream: #FAF7F2;
-    --warm-white: #F5F0E8;
-    --tan: #C9A87C;
-    --tan-light: #E8D5B7;
-    --tan-dark: #9E7A52;
-    --brown: #5C3D2E;
-    --brown-light: #8B6355;
-    --text: #2C1F14;
-    --text-muted: #7A6355;
-    --green: #6B8F71;
-    --green-light: #EAF2EB;
-    --shadow: 0 4px 24px rgba(92,61,46,0.10);
-    --radius: 14px;
-  }
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{padding:1rem 0;font-family:var(--font-sans);}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab{padding:8px 18px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);transition:all 0.15s;}
+.tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
+.tab:hover:not(.active){background:var(--color-background-secondary);}
+.section{display:none;}.section.active{display:block;}
+.tip-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px;margin-bottom:16px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;}
+.tip-box b{color:var(--color-text-primary);font-weight:500;}
+.slabel{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.09em;color:var(--color-text-tertiary);margin-bottom:8px;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+.who-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.who-legend span{font-size:12px;color:var(--color-text-secondary);}
+.wpill{display:inline-block;font-size:10px;padding:3px 9px;border-radius:10px;font-weight:500;}
+.w-all{background:#EAF3DE;color:#27500A;}
+.w-g{background:#E6F1FB;color:#0C447C;}
+.w-note{background:#FAEEDA;color:#854F0B;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0 0 60px 0;
-  }
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;}
+.inv-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;}
+.cat-pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-bottom:10px;}
+.pill-protein{background:#E6F1FB;color:#0C447C;}
+.pill-starch{background:#FAEEDA;color:#854F0B;}
+.pill-sauce{background:#FCEBEB;color:#A32D2D;}
+.pill-veg{background:#EAF3DE;color:#3B6D11;}
+.pill-dairy{background:#EEEDFE;color:#3C3489;}
+.inv-item{font-size:13px;color:var(--color-text-primary);padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.inv-item:last-child{border-bottom:none;}
+.inv-qty{font-size:11px;color:var(--color-text-secondary);white-space:nowrap;}
+.inv-note{font-size:10px;color:#854F0B;display:block;margin-top:1px;}
 
-  header {
-    background: var(--brown);
-    padding: 36px 24px 28px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
+.meal-filter{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.fchip{padding:5px 13px;border:0.5px solid var(--color-border-tertiary);border-radius:16px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;background:transparent;font-family:var(--font-sans);}
+.fchip.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
+.meal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;}
+.meal-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;cursor:pointer;transition:border-color 0.15s;}
+.meal-card:hover{border-color:var(--color-border-primary);}
+.meal-card.sel{border:1.5px solid var(--color-text-primary);}
+.meal-emoji{font-size:20px;margin-bottom:6px;}
+.meal-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;line-height:1.3;}
+.meal-meta{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;}
+.time-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;margin-top:2px;}
+.tb-fast{background:#EAF3DE;color:#3B6D11;}
+.tb-mid{background:#FAEEDA;color:#854F0B;}
 
-  header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 40px,
-      rgba(201,168,124,0.06) 40px,
-      rgba(201,168,124,0.06) 80px
-    );
-  }
+.rdetail{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;margin-top:12px;}
+.rdetail h3{font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;}
+.meta-row{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.meta-item{font-size:12px;color:var(--color-text-secondary);}
+.meta-item b{color:var(--color-text-primary);font-weight:500;}
+.rcols{display:grid;grid-template-columns:1fr 1.8fr;gap:20px;}
+@media(max-width:500px){.rcols{grid-template-columns:1fr;}}
+.ing-list{list-style:none;}
+.ing-list li{font-size:13px;color:var(--color-text-primary);padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);line-height:1.4;}
+.ing-list li:last-child{border-bottom:none;}
+.step{display:flex;gap:10px;margin-bottom:10px;font-size:13px;color:var(--color-text-primary);line-height:1.6;}
+.step-num{min-width:22px;height:22px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0;margin-top:1px;}
+.from-frozen{background:#E1F5EE;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:#085041;margin-bottom:10px;line-height:1.5;}
+.from-frozen b{font-weight:500;}
+.corin-note{background:#FAEEDA;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:#633806;margin-bottom:14px;line-height:1.5;}
+.corin-note b{font-weight:500;}
 
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    color: var(--tan-light);
-    font-size: 2rem;
-    letter-spacing: 0.02em;
-    position: relative;
-  }
+.store-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:480px){.store-cols{grid-template-columns:1fr;}}
+.store-block{border-radius:var(--border-radius-lg);padding:14px;}
+.aldi-block{background:#E6F1FB;border:0.5px solid #B5D4F4;}
+.target-block{background:#FCEBEB;border:0.5px solid #F7C1C1;}
+.store-header{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.09em;margin-bottom:4px;}
+.aldi-block .store-header{color:#0C447C;}
+.target-block .store-header{color:#A32D2D;}
+.store-sub{font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;}
+.cat-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin:10px 0 4px;text-transform:uppercase;letter-spacing:0.05em;}
+.g-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:0.5px solid rgba(0,0,0,0.07);font-size:13px;color:var(--color-text-primary);line-height:1.4;cursor:pointer;user-select:none;}
+.g-item:last-child{border-bottom:none;}
+.g-item.checked{opacity:0.38;text-decoration:line-through;}
+.g-check{width:15px;height:15px;min-width:15px;border-radius:3px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.g-item.checked .g-check{background:var(--color-text-primary);border-color:var(--color-text-primary);}
+.cksvg{display:none;width:9px;height:9px;}
+.g-item.checked .cksvg{display:block;}
+.g-qty{font-size:11px;color:var(--color-text-secondary);margin-left:auto;white-space:nowrap;padding-left:6px;}
 
-  header p {
-    color: var(--tan);
-    font-size: 0.85rem;
-    margin-top: 6px;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    position: relative;
-  }
-
-  .progress-bar-wrap {
-    background: var(--warm-white);
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid var(--tan-light);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(92,61,46,0.07);
-  }
-
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin-bottom: 8px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .progress-bar {
-    height: 6px;
-    background: var(--tan-light);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--tan-dark), var(--tan));
-    border-radius: 99px;
-    transition: width 0.5s cubic-bezier(.4,0,.2,1);
-    width: 0%;
-  }
-
-  .sections {
-    padding: 24px 16px 0;
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .section {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    border: 1px solid var(--tan-light);
-    transition: opacity 0.3s;
-  }
-
-  .section-header {
-    background: var(--warm-white);
-    padding: 16px 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--tan-light);
-    user-select: none;
-    gap: 12px;
-  }
-
-  .section-header:hover { background: var(--tan-light); transition: background 0.2s; }
-
-  .section-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-  }
-
-  .section-icon {
-    font-size: 1.3rem;
-    width: 36px;
-    height: 36px;
-    background: var(--tan-light);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
-    color: var(--brown);
-    font-weight: 600;
-  }
-
-  .section-meta {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-    font-weight: 400;
-  }
-
-  .section-badge {
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 3px 9px;
-    border-radius: 99px;
-    background: var(--tan-light);
-    color: var(--tan-dark);
-    flex-shrink: 0;
-    letter-spacing: 0.02em;
-  }
-
-  .section-badge.done {
-    background: var(--green-light);
-    color: var(--green);
-  }
-
-  .chevron {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    transition: transform 0.3s;
-    flex-shrink: 0;
-  }
-
-  .section.open .chevron { transform: rotate(180deg); }
-
-  .section-body {
-    display: none;
-    padding: 0;
-  }
-
-  .section.open .section-body { display: block; }
-
-  .task {
-    border-bottom: 1px solid var(--warm-white);
-    transition: background 0.15s;
-  }
-
-  .task:last-child { border-bottom: none; }
-
-  .task-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px 20px 14px;
-    cursor: pointer;
-  }
-
-  .task-header:hover { background: #FDFAF6; }
-
-  .checkbox {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    border: 2px solid var(--tan);
-    flex-shrink: 0;
-    margin-top: 1px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    background: white;
-  }
-
-  .task.checked .checkbox {
-    background: var(--green);
-    border-color: var(--green);
-  }
-
-  .checkmark {
-    color: white;
-    font-size: 0.75rem;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.2s;
-  }
-
-  .task.checked .checkmark {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .task-text {
-    flex: 1;
-  }
-
-  .task-name {
-    font-size: 0.92rem;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.4;
-    transition: color 0.2s;
-  }
-
-  .task.checked .task-name {
-    color: var(--text-muted);
-    text-decoration: line-through;
-    text-decoration-color: var(--tan);
-  }
-
-  .task-product {
-    font-size: 0.75rem;
-    color: var(--tan-dark);
-    margin-top: 2px;
-    font-weight: 400;
-  }
-
-  .expand-btn {
-    font-size: 0.7rem;
-    color: var(--tan-dark);
-    background: var(--warm-white);
-    border: none;
-    border-radius: 99px;
-    padding: 3px 10px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    flex-shrink: 0;
-    margin-top: 2px;
-    transition: background 0.15s;
-  }
-
-  .expand-btn:hover { background: var(--tan-light); }
-
-  .instructions {
-    display: none;
-    background: #FDFAF6;
-    border-top: 1px solid var(--warm-white);
-    padding: 14px 20px 16px 56px;
-  }
-
-  .instructions.open { display: block; }
-
-  .instructions ol {
-    padding-left: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-
-  .instructions li {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    line-height: 1.55;
-  }
-
-  .instructions li strong {
-    color: var(--brown-light);
-    font-weight: 500;
-  }
-
-  .tip {
-    margin-top: 10px;
-    background: var(--tan-light);
-    border-radius: 8px;
-    padding: 9px 12px;
-    font-size: 0.78rem;
-    color: var(--tan-dark);
-    line-height: 1.5;
-  }
-
-  .tip::before { content: '💡 '; }
-
-  .all-done {
-    display: none;
-    text-align: center;
-    padding: 36px 24px;
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--tan-light);
-    margin: 0 16px;
-  }
-
-  .all-done.show { display: block; }
-
-  .all-done h2 {
-    font-family: 'Playfair Display', serif;
-    color: var(--brown);
-    font-size: 1.4rem;
-    margin-bottom: 8px;
-  }
-
-  .all-done p {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-  }
-
-  .reset-btn {
-    margin-top: 18px;
-    background: var(--brown);
-    color: var(--tan-light);
-    border: none;
-    border-radius: 99px;
-    padding: 10px 24px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.03em;
-    transition: background 0.2s;
-  }
-
-  .reset-btn:hover { background: var(--brown-light); }
+.kids-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.kids-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;text-align:center;}
+.kids-emoji{font-size:28px;margin-bottom:6px;}
+.kids-name{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.3;margin-bottom:4px;}
+.kids-who{font-size:10px;margin-bottom:2px;}
+.kids-time{font-size:11px;color:var(--color-text-secondary);}
+.print-btn{display:inline-block;padding:10px 22px;border:0.5px solid var(--color-border-primary);border-radius:20px;font-size:13px;color:var(--color-text-primary);cursor:pointer;background:transparent;font-family:var(--font-sans);margin-bottom:16px;}
+.print-btn:hover{background:var(--color-background-secondary);}
 </style>
-</head>
-<body>
 
-<header>
-  <h1>Home Deep Clean</h1>
-  <p>Tap a task to check it off · Tap "Steps" for instructions</p>
-</header>
-
-<div class="progress-bar-wrap">
-  <div class="progress-label">
-    <span>Progress</span>
-    <span id="progress-text">0 of 0 tasks complete</span>
-  </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="progress-fill"></div>
-  </div>
+<div class="app">
+<div class="tabs">
+  <button class="tab active" onclick="showTab('inventory',this)">Freezer inventory</button>
+  <button class="tab" onclick="showTab('meals',this)">Meal menu</button>
+  <button class="tab" onclick="showTab('grocery',this)">Monthly grocery run</button>
+  <button class="tab" onclick="showTab('kids',this)">Kids' menu</button>
 </div>
 
-<div class="sections" id="sections">
-
-  <!-- WINDOWSILLS -->
-  <div class="section open" data-section="windowsills">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🪟</div>
-        <div>
-          <div class="section-title">Windowsills</div>
-          <div class="section-meta">Mold removal + prevention</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-windowsills">0/3</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="w1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Clean & kill the mold</div>
-            <div class="task-product">Concrobium Mold Control + stiff bristle brush</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Ventilate:</strong> Open a nearby window and put on your N95 mask and rubber gloves.</li>
-            <li><strong>Spray:</strong> Apply Concrobium directly to the mold on the windowsill, coating fully.</li>
-            <li><strong>Wait:</strong> Let it sit for 10–15 minutes.</li>
-            <li><strong>Scrub:</strong> Use the stiff bristle brush to scrub the affected area, focusing on corners.</li>
-            <li><strong>Wipe clean:</strong> Wipe away residue with a damp cloth.</li>
-            <li><strong>Dry completely:</strong> Let the surface dry fully before priming — this is critical.</li>
-          </ol>
-          <div class="tip">Concrobium leaves an antimicrobial barrier as it dries — don't rinse it off completely.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="w2">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Apply Zinsser Mold Blocking Primer</div>
-            <div class="task-product">Zinsser spray primer</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Confirm surface is dry:</strong> The windowsill must be completely dry before priming.</li>
-            <li><strong>Shake well:</strong> Shake the can for 60 seconds before spraying.</li>
-            <li><strong>Spray evenly:</strong> Hold 10–12 inches away and apply a thin, even coat over the cleaned area.</li>
-            <li><strong>Dry time:</strong> Allow 30 minutes to dry. Apply a second coat if needed.</li>
-            <li><strong>Paint over:</strong> Once dry, paint over with your regular wall paint to finish.</li>
-          </ol>
-          <div class="tip">Keep the room ventilated — the primer has strong fumes. Keep kids out until fully dry.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="w3">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Address moisture source</div>
-            <div class="task-product">Window insulation kit or dehumidifier</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Check weatherstripping:</strong> Inspect window seals — replace if cracked or compressed.</li>
-            <li><strong>Consider a window insulation kit:</strong> Plastic film kits reduce condensation significantly in Minnesota winters.</li>
-            <li><strong>Use a dehumidifier nearby:</strong> Keeping humidity below 50% prevents recurrence.</li>
-            <li><strong>Wipe sills regularly:</strong> A quick weekly wipe during winter months catches moisture before it becomes mold.</li>
-          </ol>
-          <div class="tip">The mold will come back without fixing the moisture source — this step matters as much as the cleaning.</div>
-        </div>
-      </div>
-
-    </div>
+<!-- INVENTORY -->
+<div class="section active" id="tab-inventory">
+<div class="tip-box"><b>One big monthly haul stocks the garage freezer.</b> Every meal in this system pulls from this list — no extra shopping needed until next month. Weekly quick trip for fresh items only (yogurt, fruit, milk, honey).</div>
+<div class="who-legend">
+  <span>Who can eat it:</span>
+  <span class="wpill w-all">Everyone</span>
+  <span class="wpill w-g">Garrison + boys only</span>
+  <span class="wpill w-note">Corin's allergy note</span>
+</div>
+<div class="inv-grid">
+  <div class="inv-card">
+    <span class="cat-pill pill-protein">Proteins</span>
+    <div class="slabel">Buy once, freeze</div>
+    <div class="inv-item"><span>Chicken breasts IQF bag<span class="inv-note">Everyone — main workhorse protein</span></span><span class="inv-qty">6–7 lbs</span></div>
+    <div class="inv-item"><span>Breakfast sausage links<span class="inv-note">Everyone</span></span><span class="inv-qty">2 bags</span></div>
+    <div class="inv-item"><span>Pepperoni (resealable)<span class="inv-note">Everyone</span></span><span class="inv-qty">2 large bags</span></div>
+    <div class="inv-item"><span>Bacon<span class="inv-note">Everyone</span></span><span class="inv-qty">2 lbs, freeze flat</span></div>
+    <div class="inv-item"><span>Ground beef 80/20 (1-lb packs)<span class="inv-note">Garrison + boys — Corin skip or cook separate chicken</span></span><span class="inv-qty">3 lbs</span></div>
+    <div class="inv-item"><span>Frozen salmon fillets<span class="inv-note">Garrison + boys — Grayson approved!</span></span><span class="inv-qty">2 lbs</span></div>
+    <div class="inv-item"><span>Frozen meatballs<span class="inv-note">Garrison + boys (check: pork-only meatballs are Corin-safe — beef blend are not)</span></span><span class="inv-qty">1 bag (32 oz)</span></div>
+    <div class="inv-item"><span>Ground pork or Italian sausage<span class="inv-note">Everyone — beef-free swap for skillet meals</span></span><span class="inv-qty">2 lbs</span></div>
   </div>
-
-  <!-- SHOWER GROUT -->
-  <div class="section" data-section="grout">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🚿</div>
-        <div>
-          <div class="section-title">Shower Grout</div>
-          <div class="section-meta">Deep mildew removal</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-grout">0/2</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="g1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Apply CLR foaming cleaner & scrub</div>
-            <div class="task-product">CLR Mold & Mildew Foaming Stain Remover + grout brush</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Ventilate:</strong> Turn on the bathroom fan and open a window if possible.</li>
-            <li><strong>Apply foam:</strong> Spray CLR foam directly onto grout lines — the foam clings to vertical surfaces.</li>
-            <li><strong>Wait:</strong> Let sit for 10–15 minutes. Don't let it dry completely.</li>
-            <li><strong>Scrub:</strong> Use the grout brush in firm back-and-forth strokes along each grout line.</li>
-            <li><strong>Rinse thoroughly:</strong> Rinse with warm water until all product is removed.</li>
-            <li><strong>Repeat if needed:</strong> Severe staining may need 2–3 rounds.</li>
-          </ol>
-          <div class="tip">A grout brush makes a massive difference — a regular scrub brush won't get into the grout lines effectively.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="g2">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Restore grout color if still discolored</div>
-            <div class="task-product">Grout pen or Polyblend Grout Renew (if needed)</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Assess after cleaning:</strong> If grout is still deeply discolored after scrubbing, a grout pen is your best option.</li>
-            <li><strong>Let grout dry fully:</strong> Wait 24 hours after cleaning before applying any colorant.</li>
-            <li><strong>Apply grout pen:</strong> Run the pen along each grout line in one smooth pass.</li>
-            <li><strong>Wipe tile faces:</strong> Immediately wipe any product off the tile surface with a damp cloth.</li>
-            <li><strong>Allow to cure:</strong> Let dry fully before using the shower (usually 2–4 hours).</li>
-          </ol>
-          <div class="tip">Grout pens work best on white or light gray grout — they essentially restore the original color and reseal at the same time.</div>
-        </div>
-      </div>
-
-    </div>
+  <div class="inv-card">
+    <span class="cat-pill pill-starch">Starches</span>
+    <div class="slabel">Freezer or pantry</div>
+    <div class="inv-item"><span>Mama Cozzi pizza dough</span><span class="inv-qty">4 balls</span></div>
+    <div class="inv-item"><span>Frozen waffle batch (homemade)</span><span class="inv-qty">make &amp; freeze</span></div>
+    <div class="inv-item"><span>Frozen garlic bread / Texas toast</span><span class="inv-qty">2 boxes</span></div>
+    <div class="inv-item"><span>Frozen fries / tater tots</span><span class="inv-qty">2 large bags</span></div>
+    <div class="inv-item"><span>Pasta (penne, spaghetti)</span><span class="inv-qty">4 boxes</span></div>
+    <div class="inv-item"><span>Rice, 5 lb bag</span><span class="inv-qty">1 bag</span></div>
+    <div class="inv-item"><span>Flour tortillas (freeze)</span><span class="inv-qty">2 packs</span></div>
+    <div class="inv-item"><span>Hoagie rolls (freeze)</span><span class="inv-qty">1 pack</span></div>
   </div>
-
-  <!-- TUB -->
-  <div class="section" data-section="tub">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🛁</div>
-        <div>
-          <div class="section-title">Bathtub</div>
-          <div class="section-meta">Yellow mineral deposit removal</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-tub">0/1</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="t1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Remove yellow mineral deposits</div>
-            <div class="task-product">Bar Keepers Friend + non-scratch sponge</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Wet the surface:</strong> Lightly wet the tub floor.</li>
-            <li><strong>Apply Bar Keepers Friend:</strong> Sprinkle powder (or spray) directly onto the yellow spots.</li>
-            <li><strong>Let sit:</strong> Wait 1–2 minutes — don't let it dry.</li>
-            <li><strong>Scrub gently:</strong> Use a non-scratch sponge in circular motions. Do NOT use abrasive scrubbers — they'll permanently scratch acrylic.</li>
-            <li><strong>Rinse well:</strong> Rinse completely and assess. Repeat for stubborn spots.</li>
-            <li><strong>Escalate if needed:</strong> If spots remain, apply CLR (5 min max on acrylic) then rinse immediately.</li>
-          </ol>
-          <div class="tip">Never use steel wool or scotch brite on acrylic — once scratched, it's permanent. Soft cloth or non-scratch sponge only.</div>
-        </div>
-      </div>
-
-    </div>
+  <div class="inv-card">
+    <span class="cat-pill pill-sauce">Sauces &amp; pantry</span>
+    <div class="slabel">Never run out of these</div>
+    <div class="inv-item"><span>Pizza / marinara sauce (jars)</span><span class="inv-qty">6 jars</span></div>
+    <div class="inv-item"><span>Soy sauce</span><span class="inv-qty">1 bottle</span></div>
+    <div class="inv-item"><span>Taco seasoning packets</span><span class="inv-qty">6 packets</span></div>
+    <div class="inv-item"><span>Ranch seasoning packets</span><span class="inv-qty">4 packets</span></div>
+    <div class="inv-item"><span>Chicken broth (cartons)</span><span class="inv-qty">4 cartons</span></div>
+    <div class="inv-item"><span>Canned diced tomatoes</span><span class="inv-qty">6 cans</span></div>
+    <div class="inv-item"><span>Soy sauce, brown sugar, honey</span><span class="inv-qty">bulk</span></div>
+    <div class="inv-item"><span>Olive oil, garlic powder, Italian seasoning</span><span class="inv-qty">check stock</span></div>
+    <div class="inv-item"><span>Maple syrup</span><span class="inv-qty">1 large</span></div>
+    <div class="inv-item"><span>Salsa + sour cream</span><span class="inv-qty">2 jars / 1 tub</span></div>
   </div>
-
-  <!-- TOILETS -->
-  <div class="section" data-section="toilets">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🚽</div>
-        <div>
-          <div class="section-title">Toilets (×5)</div>
-          <div class="section-meta">Rust rings, under-rim buildup & prevention</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-toilets">0/3</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="to1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Deep clean under the rim</div>
-            <div class="task-product">CLR Toilet Bowl Cleaner + toilet brush</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Apply CLR:</strong> Squeeze CLR under the rim, letting it flow down into the bowl.</li>
-            <li><strong>Coat the bowl:</strong> Apply around the waterline and sides of the bowl as well.</li>
-            <li><strong>Wait 15–20 minutes:</strong> Allow CLR to break down mineral and manganese deposits.</li>
-            <li><strong>Scrub thoroughly:</strong> Use the toilet brush to scrub under the rim jets and around the bowl.</li>
-            <li><strong>Flush to rinse:</strong> Flush 1–2 times to clear.</li>
-            <li><strong>Repeat on all 5 toilets.</strong></li>
-          </ol>
-          <div class="tip">The black buildup under the rim is manganese — CLR is specifically effective against it. Let it sit the full time.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="to2">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Remove waterline rust rings</div>
-            <div class="task-product">Pumie Toilet Bowl Ring Remover</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Wet the Pumie stick:</strong> Dip it in the toilet water to wet it before use.</li>
-            <li><strong>Scrub the ring:</strong> Rub the Pumie along the rust/mineral ring with light, even pressure — it works like an eraser.</li>
-            <li><strong>Keep both surfaces wet:</strong> Rewet the Pumie and ring regularly while scrubbing.</li>
-            <li><strong>Rinse and assess:</strong> Flush and check — repeat as needed for stubborn rings.</li>
-            <li><strong>Repeat on all 5 toilets.</strong></li>
-          </ol>
-          <div class="tip">Pumie is safe on porcelain but don't use it on plastic toilet seats. Light pressure is enough — let the pumice do the work.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="to3">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Add Iron Out prevention tabs</div>
-            <div class="task-product">Iron Out Automatic Toilet Bowl Cleaner</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Place one tab in each tank:</strong> Drop one Iron Out tab into the toilet tank (not the bowl) of each toilet.</li>
-            <li><strong>Do not use in bowl directly:</strong> The tab goes in the tank so it treats each flush.</li>
-            <li><strong>Replace as directed:</strong> Typically every 30–45 days depending on use frequency.</li>
-          </ol>
-          <div class="tip">For rarely used toilets, flush them every few days even if unused — stagnant water is what accelerates the buildup.</div>
-        </div>
-      </div>
-
-    </div>
+  <div class="inv-card">
+    <span class="cat-pill pill-dairy">Dairy &amp; eggs</span>
+    <div class="slabel">Fridge + garage fridge</div>
+    <div class="inv-item"><span>Shredded mozzarella</span><span class="inv-qty">4 bags (16 oz)</span></div>
+    <div class="inv-item"><span>Shredded Mexican blend</span><span class="inv-qty">2 bags</span></div>
+    <div class="inv-item"><span>Parmesan (shaker)</span><span class="inv-qty">1 large</span></div>
+    <div class="inv-item"><span>Cream cheese</span><span class="inv-qty">2 blocks</span></div>
+    <div class="inv-item"><span>Butter, salted</span><span class="inv-qty">4 lbs</span></div>
+    <div class="inv-item"><span>Whole milk</span><span class="inv-qty">3–4 gallons</span></div>
+    <div class="inv-item"><span>Eggs</span><span class="inv-qty">3 dozen</span></div>
+    <div class="inv-item"><span>Whipped cream (can)</span><span class="inv-qty">2–3</span></div>
   </div>
-
-  <!-- DRAINS -->
-  <div class="section" data-section="drains">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🌀</div>
-        <div>
-          <div class="section-title">Bathroom Sink Drains</div>
-          <div class="section-meta">Mildew odor elimination</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-drains">0/1</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="d1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Treat drains for biofilm & odor</div>
-            <div class="task-product">Drano Max Build Up Remover</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Do not use a plunger beforehand:</strong> Use on slow or smelly drains — not fully clogged ones.</li>
-            <li><strong>Pour as directed:</strong> Pour the recommended amount slowly down each drain.</li>
-            <li><strong>Wait overnight:</strong> The enzyme formula works best with a long dwell time — ideally 6–8 hours.</li>
-            <li><strong>Flush with hot water:</strong> In the morning, run hot water for 2–3 minutes to flush.</li>
-            <li><strong>Repeat monthly:</strong> Use once a month as maintenance to prevent biofilm from rebuilding.</li>
-          </ol>
-          <div class="tip">The smell is from biofilm — hair, soap scum, and bacteria coating the inside of the pipe. Enzymes break it down without harsh chemicals.</div>
-        </div>
-      </div>
-
-    </div>
+  <div class="inv-card">
+    <span class="cat-pill pill-veg">Frozen veg + fruit</span>
+    <div class="slabel">No chopping required</div>
+    <div class="inv-item"><span>Frozen broccoli florets</span><span class="inv-qty">3 bags</span></div>
+    <div class="inv-item"><span>Frozen corn</span><span class="inv-qty">2 bags</span></div>
+    <div class="inv-item"><span>Frozen peas</span><span class="inv-qty">2 bags</span></div>
+    <div class="inv-item"><span>Frozen green beans</span><span class="inv-qty">2 bags</span></div>
+    <div class="inv-item"><span>Frozen strawberries</span><span class="inv-qty">3 bags</span></div>
+    <div class="inv-item"><span>Frozen blueberries</span><span class="inv-qty">3 bags</span></div>
+    <div class="inv-item"><span>Frozen bananas (peel &amp; bag fresh)</span><span class="inv-qty">ongoing</span></div>
   </div>
-
-  <!-- WASHING MACHINE -->
-  <div class="section" data-section="washer">
-    <div class="section-header" onclick="toggleSection(this)">
-      <div class="section-left">
-        <div class="section-icon">🫧</div>
-        <div>
-          <div class="section-title">Washing Machine</div>
-          <div class="section-meta">Front loader deep clean</div>
-        </div>
-      </div>
-      <span class="section-badge" id="badge-washer">0/2</span>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="section-body">
-
-      <div class="task" data-id="wm1">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Run Affresh cleaning cycle</div>
-            <div class="task-product">Affresh Washing Machine Cleaner</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Empty the machine:</strong> Make sure there's no laundry inside.</li>
-            <li><strong>Place tablet in drum:</strong> Drop one Affresh tablet directly into the washing machine drum (not the dispenser).</li>
-            <li><strong>Run clean cycle:</strong> Select the "Clean Washer" cycle, or the hottest/longest cycle available.</li>
-            <li><strong>Wipe down after:</strong> Once the cycle finishes, wipe the inside of the drum and door glass with a clean cloth.</li>
-          </ol>
-          <div class="tip">Run Affresh once a month to prevent buildup. The gasket is the main culprit for front loader smell — wipe it out after every wash if possible.</div>
-        </div>
-      </div>
-
-      <div class="task" data-id="wm2">
-        <div class="task-header" onclick="toggleTask(this)">
-          <div class="checkbox"><span class="checkmark">✓</span></div>
-          <div class="task-text">
-            <div class="task-name">Clean the door gasket</div>
-            <div class="task-product">Damp cloth + mild cleaner</div>
-          </div>
-          <button class="expand-btn" onclick="toggleInstructions(event, this)">Steps</button>
-        </div>
-        <div class="instructions">
-          <ol>
-            <li><strong>Pull back the rubber gasket:</strong> Fold it back to expose the hidden inner lip — this is where mildew hides.</li>
-            <li><strong>Wipe thoroughly:</strong> Use a damp cloth with a little dish soap or diluted white vinegar to wipe all around the inside of the gasket folds.</li>
-            <li><strong>Dry with a clean cloth:</strong> Wipe dry so moisture doesn't sit.</li>
-            <li><strong>Leave door ajar:</strong> After every wash going forward, leave the door cracked open to allow airflow.</li>
-          </ol>
-          <div class="tip">Leaving the door open between washes is the single most effective thing you can do to prevent front loader mildew long-term.</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
+</div>
 </div>
 
-<div class="all-done" id="all-done">
-  <div style="font-size:2.5rem;margin-bottom:12px;">🎉</div>
-  <h2>All done!</h2>
-  <p>Every cleaning task is complete. Your home is going to feel so fresh.</p>
-  <button class="reset-btn" onclick="resetAll()">Start Over</button>
+<!-- MEALS -->
+<div class="section" id="tab-meals">
+<div class="who-legend">
+  <span>Key:</span>
+  <span class="wpill w-all">Everyone</span>
+  <span class="wpill w-g">Garrison + boys only</span>
 </div>
+<div class="meal-filter">
+  <button class="fchip on" onclick="filterMeals('all',this)">All meals</button>
+  <button class="fchip" onclick="filterMeals('corin',this)">Corin can eat</button>
+  <button class="fchip" onclick="filterMeals('dinner',this)">Dinner</button>
+  <button class="fchip" onclick="filterMeals('breakfast',this)">Breakfast</button>
+  <button class="fchip" onclick="filterMeals('fast',this)">Under 20 min</button>
+</div>
+<div class="meal-grid" id="meal-grid"></div>
+<div class="rdetail" id="recipe-detail" style="display:none;"></div>
+</div>
+
+<!-- GROCERY -->
+<div class="section" id="tab-grocery">
+<div class="tip-box"><b>Monthly haul — one trip covers the whole month.</b> Proteins and pantry go in the garage freezer. Weekly refresh: yogurt, fresh fruit, milk, honey, and anything that ran low.</div>
+<div class="store-cols">
+  <div class="store-block aldi-block">
+    <div class="store-header">Aldi — Maple Grove</div>
+    <div class="store-sub">Big monthly haul</div>
+    <div class="cat-label">Meat &amp; protein</div><div id="ga-meat"></div>
+    <div class="cat-label">Frozen foods</div><div id="ga-frozen"></div>
+    <div class="cat-label">Dairy &amp; eggs</div><div id="ga-dairy"></div>
+    <div class="cat-label">Dry &amp; pantry</div><div id="ga-dry"></div>
+    <div class="cat-label">Weekly fresh (each trip)</div><div id="ga-fresh"></div>
+  </div>
+  <div class="store-block target-block">
+    <div class="store-header">Target — monthly</div>
+    <div class="store-sub">Items Aldi doesn't reliably carry</div>
+    <div id="g-target"></div>
+  </div>
+</div>
+</div>
+
+<!-- KIDS MENU -->
+<div class="section" id="tab-kids">
+<div class="tip-box"><b>Print this for the fridge.</b> Everything here can be made from the garage freezer in 30 min or less. Green = everyone eats. Blue = Dad and boys get this one, Mom makes something quick for herself alongside.</div>
+<button class="print-btn" onclick="sendPrompt('Generate a printable PDF of the updated kids freezer menu with allergy labels')">Generate printable PDF ↗</button>
+<div class="kids-grid" id="kids-grid"></div>
+</div>
+</div>
+
+<svg style="display:none"><symbol id="ck" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
 
 <script>
-  const tasks = {};
-  const sectionMap = {
-    windowsills: ['w1','w2','w3'],
-    grout: ['g1','g2'],
-    tub: ['t1'],
-    toilets: ['to1','to2','to3'],
-    drains: ['d1'],
-    washer: ['wm1','wm2']
-  };
+const meals = [
+  // EVERYONE
+  {id:'pizza',emoji:'🍕',title:'Pepperoni Pizza',time:'20 min',cat:'dinner',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'No thaw needed — use dough straight from fridge.',
+   corinNote:null,
+   ingredients:['1 Mama Cozzi pizza dough ball','½ cup marinara sauce','1½ cups shredded mozzarella','Pepperoni slices','Olive oil, garlic powder'],
+   steps:['Preheat oven to 475°F.','Stretch dough on a floured surface into a 12–14" round.','Brush crust edge with olive oil and garlic powder.','Spread sauce, layer mozzarella, then pepperoni.','Bake on lowest rack 12–14 min until bubbly and golden.','Rest 2 min, slice, serve.']},
 
-  function toggleSection(header) {
-    const section = header.closest('.section');
-    section.classList.toggle('open');
-  }
+  {id:'pizzachicken',emoji:'🍗',title:'Pizza Chicken',time:'25 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'Thaw chicken breasts overnight in fridge, or cold water 30 min.',
+   corinNote:null,
+   ingredients:['4 chicken breasts (thawed)','Salt, pepper, garlic powder','½ cup marinara sauce','1 cup shredded mozzarella','Pepperoni slices','Olive oil'],
+   steps:['Preheat oven to 400°F. Line a baking sheet with foil.','Pound chicken to even ¾" thickness. Season both sides.','Sear in oiled skillet 2–3 min per side until golden.','Transfer to pan. Spoon sauce over each, top with mozzarella and pepperoni.','Bake 12–15 min until cheese is bubbling and chicken hits 165°F.','Rest 3 min before serving.']},
 
-  function toggleTask(header) {
-    const task = header.closest('.task');
-    const id = task.dataset.id;
-    tasks[id] = !tasks[id];
-    task.classList.toggle('checked', tasks[id]);
-    updateProgress();
-  }
+  {id:'ranch_chicken',emoji:'🥗',title:'Ranch Chicken & Broccoli',time:'30 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'Thaw chicken overnight. Broccoli goes in frozen — no thaw.',
+   corinNote:null,
+   ingredients:['4 chicken breasts (thawed)','1 ranch seasoning packet','2 tbsp olive oil','1 bag frozen broccoli','Salt, pepper','Optional: mozzarella on top last 5 min'],
+   steps:['Preheat oven to 400°F. Line a large baking sheet with foil.','Toss chicken with olive oil and ranch seasoning. Place on one half of pan.','Spread frozen broccoli on the other half. Drizzle oil, season with salt and pepper.','Bake 25–28 min until chicken hits 165°F and broccoli edges crisp up.','Optional: add mozzarella to chicken for the last 5 min.']},
 
-  function toggleInstructions(e, btn) {
-    e.stopPropagation();
-    const task = btn.closest('.task');
-    const instr = task.querySelector('.instructions');
-    instr.classList.toggle('open');
-    btn.textContent = instr.classList.contains('open') ? 'Hide' : 'Steps';
-  }
+  {id:'chicken_pasta',emoji:'🍝',title:'Chicken & Penne in Marinara',time:'25 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'Thaw chicken overnight.',
+   corinNote:null,
+   ingredients:['3–4 chicken breasts, diced (thawed)','12 oz penne pasta','1 jar marinara sauce','Garlic powder, Italian seasoning','Parmesan to serve','Olive oil'],
+   steps:['Boil salted water, cook penne per package.','Heat oil in a skillet. Season chicken with garlic powder and Italian seasoning.','Cook chicken pieces 5–7 min over medium-high until cooked through.','Add marinara to skillet. Simmer 3–4 min.','Drain pasta. Toss with chicken and sauce. Top with Parmesan.']},
 
-  function updateProgress() {
-    const allIds = Object.values(sectionMap).flat();
-    const total = allIds.length;
-    const done = allIds.filter(id => tasks[id]).length;
+  {id:'chicken_soup',emoji:'🍲',title:'Chicken & Rice Soup',time:'30 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4–5',
+   thaw:'Chicken can go in straight from frozen — add 5 extra min.',
+   corinNote:null,
+   ingredients:['2–3 chicken breasts','4 cups chicken broth','1 cup rice (uncooked)','1 can diced tomatoes','1 cup frozen corn','Garlic powder, Italian seasoning, salt, pepper'],
+   steps:['Bring broth to a boil in a large pot.','Add chicken breasts whole. Cook 15–20 min until cooked through.','Remove chicken, shred with two forks, return to pot.','Add rice, tomatoes, corn, and seasonings.','Simmer 15 min until rice is tender. Adjust salt and serve.']},
 
-    document.getElementById('progress-text').textContent = `${done} of ${total} tasks complete`;
-    document.getElementById('progress-fill').style.width = `${(done/total)*100}%`;
+  {id:'chicken_rice',emoji:'🥩',title:'Garlic Butter Chicken & Rice',time:'25 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'Thaw chicken overnight.',
+   corinNote:null,
+   ingredients:['4 chicken breasts (thawed, sliced thin)','2 cups rice','3 tbsp butter','1 tsp garlic powder','Salt, pepper, Italian seasoning','Optional: frozen peas or green beans'],
+   steps:['Cook rice (start first).','Slice chicken thin. Season with salt, pepper, garlic powder, and Italian seasoning.','Melt butter in a skillet over medium-high. Cook chicken 3–4 min per side until golden.','Add a splash of chicken broth or water to the pan, scrape up any bits.','Serve over rice with a side of whatever frozen veg you have.']},
 
-    for (const [section, ids] of Object.entries(sectionMap)) {
-      const secDone = ids.filter(id => tasks[id]).length;
-      const badge = document.getElementById(`badge-${section}`);
-      badge.textContent = `${secDone}/${ids.length}`;
-      badge.classList.toggle('done', secDone === ids.length);
-    }
+  {id:'garlic_bread_pizza',emoji:'🧄',title:'Garlic Bread Pizzas',time:'15 min',cat:'dinner',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'No thaw — garlic bread goes straight from frozen.',
+   corinNote:null,
+   ingredients:['1 box frozen garlic bread / Texas toast','½ cup marinara sauce','1 cup shredded mozzarella','Pepperoni slices'],
+   steps:['Preheat oven to 375°F (or per garlic bread package).','Lay pieces on a baking sheet.','Spoon marinara on each. Top with mozzarella and pepperoni.','Bake 10–12 min until cheese is melted and edges are golden.','Let cool 2 min before serving.']},
 
-    const allDone = document.getElementById('all-done');
-    const sections = document.getElementById('sections');
-    if (done === total) {
-      allDone.classList.add('show');
-      sections.style.display = 'none';
-    } else {
-      allDone.classList.remove('show');
-      sections.style.display = 'flex';
-    }
-  }
+  {id:'sausage_rice',emoji:'🍳',title:'Sausage & Rice Skillet',time:'25 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'Thaw sausage links overnight, or cook from frozen adding a few min.',
+   corinNote:null,
+   ingredients:['1 bag breakfast sausage links (thawed, sliced)','2 cups rice','1 cup frozen corn','1 cup frozen peas','2 tbsp soy sauce','1 tsp garlic powder','2 eggs (optional)'],
+   steps:['Cook rice and set aside.','Slice sausage into coins. Brown in skillet over medium-high until crispy edges.','Add frozen corn and peas. Stir 2 min until thawed.','Add rice, soy sauce, garlic powder. Stir to combine.','Optional: push rice aside, scramble 2 eggs in the empty space, fold in.']},
 
-  function resetAll() {
-    for (const id in tasks) tasks[id] = false;
-    document.querySelectorAll('.task').forEach(t => t.classList.remove('checked'));
-    document.querySelectorAll('.instructions').forEach(i => i.classList.remove('open'));
-    document.querySelectorAll('.expand-btn').forEach(b => b.textContent = 'Steps');
-    updateProgress();
-  }
+  {id:'pork_tacos',emoji:'🌮',title:'Pork Carnitas Tacos',time:'20 min',cat:'dinner',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'Thaw ground pork or Italian sausage overnight.',
+   corinNote:null,
+   ingredients:['1.5 lbs ground pork or Italian sausage (thawed)','1–2 taco seasoning packets','Flour tortillas (thaw 10 min on counter)','Shredded Mexican cheese','Diced tomatoes','Sour cream, salsa'],
+   steps:['Brown pork in skillet over medium-high, breaking it up. Drain excess fat.','Add taco seasoning and a splash of water. Simmer 3–4 min.','Warm tortillas in a dry pan 20 sec per side.','Set out toppings, everyone builds their own.']},
 
-  updateProgress();
+  {id:'quesadillas',emoji:'🌯',title:'Pork Quesadillas',time:'15 min',cat:'dinner',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'Thaw ground pork overnight. Tortillas thaw on counter in 10 min.',
+   corinNote:null,
+   ingredients:['1 lb ground pork (thawed)','1 taco seasoning packet','Flour tortillas','1 cup shredded Mexican cheese','Sour cream, salsa'],
+   steps:['Brown pork, drain fat, add seasoning and a splash of water. Simmer 3 min.','Heat a skillet over medium. Lay one tortilla flat.','Cheese on half, pork on top, fold over.','Cook 2–3 min per side until golden and crispy.','Cut into wedges. Serve with sour cream and salsa.']},
+
+  {id:'chicken_tots',emoji:'🥔',title:'Chicken Tot Bake',time:'30 min',cat:'dinner',fast:false,corin:true,who:'all',serves:'4',
+   thaw:'No thaw needed — tots go frozen. Thaw chicken overnight.',
+   corinNote:null,
+   ingredients:['3 chicken breasts (thawed, diced)','1 bag frozen tater tots','1 cup shredded mozzarella','1 tsp garlic powder','Ranch seasoning','Olive oil'],
+   steps:['Preheat oven to 400°F.','Toss diced chicken with olive oil, garlic powder, and ranch seasoning. Spread in a greased 9x13 dish.','Sprinkle mozzarella over the chicken.','Cover entirely with a single layer of frozen tots.','Bake 28–30 min until tots are golden and crispy.']},
+
+  {id:'chicken_melt',emoji:'🥖',title:'Chicken Melt Subs',time:'20 min',cat:'dinner',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'Thaw chicken overnight. Cook and shred.',
+   corinNote:null,
+   ingredients:['3 chicken breasts (thawed, cooked & shredded)','½ cup marinara sauce','1½ cups shredded mozzarella','Hoagie rolls (or garlic bread from freezer)'],
+   steps:['Cook chicken: simmer in chicken broth 15 min, then shred with forks. (Or use leftover chicken from another meal.)','Mix shredded chicken with marinara sauce in the pan. Warm through.','Split rolls and pile on chicken mixture. Top with mozzarella.','Broil 2–3 min until cheese is melted and bubbling. Watch closely.']},
+
+  {id:'eggsausage',emoji:'🍳',title:'Egg & Sausage Breakfast',time:'15 min',cat:'breakfast',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'Sausage can cook from frozen — add 3 extra min.',
+   corinNote:null,
+   ingredients:['1 bag breakfast sausage links','6 eggs','2 tbsp butter','Salt, pepper','Toast or reheated frozen waffles on the side'],
+   steps:['Cook sausage links in skillet over medium, turning until browned all over, 8–10 min.','Remove sausage. In same pan, melt butter over medium-low.','Crack in eggs. Cook to preference (scrambled or fried).','Season with salt and pepper. Serve with toast or a toasted frozen waffle.']},
+
+  {id:'waffles',emoji:'🧇',title:'Waffles (from frozen)',time:'5 min',cat:'breakfast',fast:true,corin:true,who:'all',serves:'4',
+   thaw:'Pull from freezer bag — straight into the toaster.',
+   corinNote:null,
+   ingredients:['Frozen waffle batch (made Sunday, frozen flat)','Maple syrup','Whipped cream','Fresh or frozen fruit'],
+   steps:['Pull waffles from the freezer.','Toast on medium — 2 cycles for crispy outside, soft inside.','Top with maple syrup, whipped cream, and fruit.']},
+
+  {id:'wafflefresh',emoji:'🧇',title:'Fresh Waffles (batch & freeze)',time:'30 min',cat:'breakfast',fast:false,corin:true,who:'all',serves:'8–10',
+   thaw:'N/A — make fresh, freeze extras for the month.',
+   corinNote:null,
+   ingredients:['3 cups all-purpose flour','3 tbsp sugar','1½ tbsp baking powder','¾ tsp salt','3 large eggs','2½ cups whole milk','¾ cup butter, melted','1½ tsp vanilla extract'],
+   steps:['Preheat waffle iron.','Whisk flour, sugar, baking powder, salt in a large bowl.','In a separate bowl beat eggs, then add milk, butter, vanilla.','Pour wet into dry. Stir until just combined — lumps are fine.','Cook until golden, 4–5 min per waffle.','Cool extras on a rack. Freeze flat 1 hour, then bag for the toaster.']},
+
+  {id:'smoothies',emoji:'🥤',title:'Fruit Smoothies',time:'5 min',cat:'breakfast',fast:true,corin:true,who:'all',serves:'2–3',
+   thaw:'Everything goes in frozen.',
+   corinNote:null,
+   ingredients:['1 cup frozen strawberries','1 frozen banana','½ cup frozen blueberries','1 cup whole milk','2 tbsp honey'],
+   steps:['Add frozen fruit to blender first, then milk.','Add honey.','Blend 45–60 sec until smooth. Add more milk if too thick.','Pour and serve immediately.']},
+
+  {id:'yogurt',emoji:'🫙',title:"Corin's Yogurt Bowl",time:'3 min',cat:'breakfast',fast:true,corin:true,who:'all',serves:'1',
+   thaw:'N/A.',
+   corinNote:null,
+   ingredients:['1 cup 4% Fage Greek yogurt','Fresh or frozen blueberries','Granola','Honey — a lot'],
+   steps:['Spoon yogurt into bowl.','Top with blueberries and granola.','Drizzle generously with honey.','Make coffee. Done.']},
+
+  // GARRISON + BOYS ONLY
+  {id:'beef_tacos',emoji:'🌮',title:'Beef Tacos',time:'20 min',cat:'dinner',fast:true,corin:false,who:'g',serves:'4',
+   thaw:'Thaw 1-lb ground beef pack overnight, or cold water 45 min.',
+   corinNote:"Corin's swap: pull out some pork taco meat on the side, or grab leftover pizza chicken from the fridge. Takes 5 extra min.",
+   ingredients:['1.5 lbs ground beef (thawed)','2 taco seasoning packets','Flour tortillas','Shredded Mexican cheese','Diced tomatoes','Sour cream, salsa'],
+   steps:['Brown beef in skillet, breaking it up. Drain fat.','Add seasoning and splash of water. Simmer 3–4 min.','Warm tortillas. Set out toppings, everyone builds their own.','Leftovers keep great — repeat tomorrow with zero effort.']},
+
+  {id:'salmon',emoji:'🐟',title:'Garlic Butter Salmon',time:'20 min',cat:'dinner',fast:true,corin:false,who:'g',serves:'3–4',
+   thaw:'Run frozen salmon fillets under cold water 10 min. Pat very dry.',
+   corinNote:"Corin's swap: throw a couple of chicken breasts in the oven at the same time with the same seasoning — garlic powder, butter, Italian seasoning. Done in 20 min alongside.",
+   ingredients:['4 salmon fillets (thawed)','3 tbsp butter','1 tsp garlic powder','Salt, pepper','Italian seasoning or lemon pepper','Optional: frozen green beans on the side'],
+   steps:['Pat salmon completely dry — this is the key to a good sear.','Season both sides with garlic powder, salt, pepper, and Italian seasoning.','Melt butter in a skillet over medium-high. Place salmon skin-side up.','Cook 3–4 min, flip carefully, cook another 3–4 min until it flakes easily.','Serve with a side of frozen green beans (microwave 4 min while salmon cooks).','Grayson gets first pick.']},
+
+  {id:'meatball_subs',emoji:'🥖',title:'Meatball Subs',time:'20 min',cat:'dinner',fast:true,corin:false,who:'g',serves:'4',
+   thaw:'No thaw — meatballs heat straight from frozen.',
+   corinNote:"Corin's swap: make a chicken melt sub alongside using shredded chicken + marinara — same rolls, same cheese, same broiler. Easy parallel.",
+   ingredients:['1 bag frozen meatballs','1 jar marinara sauce','Hoagie rolls','1½ cups shredded mozzarella'],
+   steps:['Combine meatballs and marinara in a saucepan. Cover and heat on medium 12–15 min.','Preheat broiler.','Split rolls, pile on meatballs and sauce. Top with mozzarella.','Broil 2–3 min until cheese is melted and bubbly. Watch closely.']},
+
+  {id:'spaghetti',emoji:'🍝',title:'Spaghetti & Meatballs',time:'25 min',cat:'dinner',fast:false,corin:false,who:'g',serves:'4–5',
+   thaw:'No thaw — meatballs go straight into sauce from frozen.',
+   corinNote:"Corin's swap: boil extra pasta and ladle out some plain marinara before adding meatballs. Or cook a diced chicken breast in a separate pan and toss with pasta.",
+   ingredients:['12 oz spaghetti','1 bag frozen meatballs (~20)','1 jar marinara sauce','Parmesan to serve','Salt for pasta water'],
+   steps:['Boil a large pot of salted water. Cook spaghetti per package.','Pour marinara into a saucepan over medium heat.','Add frozen meatballs directly. Cover and simmer 15 min, stirring occasionally.','Drain pasta. Serve meatballs and sauce over spaghetti. Top with Parmesan.']},
+];
+
+function renderMeals(filter){
+  const filtered = filter==='all' ? meals
+    : filter==='corin' ? meals.filter(m=>m.corin)
+    : filter==='fast' ? meals.filter(m=>m.fast)
+    : meals.filter(m=>m.cat===filter);
+  const grid = document.getElementById('meal-grid');
+  grid.innerHTML = filtered.map(m=>`
+    <div class="meal-card" id="mc-${m.id}" onclick="showRecipe('${m.id}')">
+      <div class="meal-emoji">${m.emoji}</div>
+      <div class="meal-title">${m.title}</div>
+      <div class="meal-meta">Serves ${m.serves}</div>
+      <div><span class="wpill ${m.who==='all'?'w-all':'w-g'}" style="font-size:10px;">${m.who==='all'?'Everyone':'Garrison + boys'}</span></div>
+      <span class="time-badge ${m.fast?'tb-fast':'tb-mid'}">${m.time}</span>
+    </div>`).join('');
+  document.getElementById('recipe-detail').style.display='none';
+}
+
+function filterMeals(f,el){
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderMeals(f);
+}
+
+function showRecipe(id){
+  document.querySelectorAll('.meal-card').forEach(c=>c.classList.remove('sel'));
+  const mc=document.getElementById('mc-'+id);
+  if(mc) mc.classList.add('sel');
+  const m=meals.find(x=>x.id===id);
+  const det=document.getElementById('recipe-detail');
+  det.style.display='block';
+  det.innerHTML=`
+    <h3>${m.emoji} ${m.title}</h3>
+    <div class="meta-row">
+      <div class="meta-item">Time: <b>${m.time}</b></div>
+      <div class="meta-item">Serves: <b>${m.serves}</b></div>
+      <span class="wpill ${m.who==='all'?'w-all':'w-g'}">${m.who==='all'?'Everyone eats this':'Garrison + boys only'}</span>
+    </div>
+    <div class="from-frozen"><b>From frozen:</b> ${m.thaw}</div>
+    ${m.corinNote?`<div class="corin-note"><b>Corin's parallel swap:</b> ${m.corinNote}</div>`:''}
+    <div class="rcols">
+      <div>
+        <div class="slabel">Ingredients</div>
+        <ul class="ing-list">${m.ingredients.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <div class="slabel">Steps</div>
+        ${m.steps.map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><span>${s}</span></div>`).join('')}
+      </div>
+    </div>`;
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderKids(){
+  const all=meals.filter(m=>m.id!=='wafflefresh'&&m.id!=='yogurt');
+  document.getElementById('kids-grid').innerHTML=all.map(m=>`
+    <div class="kids-card">
+      <div class="kids-emoji">${m.emoji}</div>
+      <div class="kids-name">${m.title}</div>
+      <div class="kids-who"><span class="wpill ${m.who==='all'?'w-all':'w-g'}">${m.who==='all'?'Everyone':'Dad + boys'}</span></div>
+      <div class="kids-time">${m.time}</div>
+    </div>`).join('');
+}
+
+const groceryData={
+  meat:[
+    {n:'Chicken breasts IQF bag',q:'2 bags (~6–7 lbs)'},
+    {n:'Breakfast sausage links',q:'2 bags'},
+    {n:'Pepperoni, resealable large bag',q:'2 bags'},
+    {n:'Bacon',q:'2 lbs'},
+    {n:'Ground pork or Italian sausage',q:'2 lbs'},
+    {n:'Ground beef 80/20, 1-lb packs',q:'3 lbs (Garrison + boys)'},
+    {n:'Frozen salmon fillets',q:'2 lbs (Garrison + boys)'},
+    {n:'Frozen meatballs 32 oz bag',q:'1 bag (Garrison + boys)'},
+  ],
+  frozen:[
+    {n:'Mama Cozzi pizza dough (refrigerated)',q:'4 balls'},
+    {n:'Frozen broccoli florets',q:'3 bags'},
+    {n:'Frozen corn',q:'2 bags'},
+    {n:'Frozen peas',q:'2 bags'},
+    {n:'Frozen green beans',q:'2 bags'},
+    {n:'Frozen strawberries',q:'3 bags'},
+    {n:'Frozen blueberries',q:'3 bags'},
+    {n:'Frozen fries / tater tots',q:'2 large bags'},
+    {n:'Frozen garlic bread / Texas toast',q:'2 boxes'},
+  ],
+  dairy:[
+    {n:'Eggs',q:'3 dozen'},
+    {n:'Butter, salted',q:'4 lbs'},
+    {n:'Whole milk',q:'3–4 gallons (garage fridge)'},
+    {n:'Shredded mozzarella',q:'4 bags (16 oz)'},
+    {n:'Shredded Mexican cheese blend',q:'2 bags'},
+    {n:'Parmesan shaker',q:'1 large'},
+    {n:'Cream cheese',q:'2 blocks'},
+    {n:'Whipped cream cans',q:'2–3'},
+  ],
+  dry:[
+    {n:'Penne pasta',q:'2 boxes'},
+    {n:'Spaghetti',q:'2 boxes'},
+    {n:'Rice, 5 lb bag',q:'1'},
+    {n:'Flour, all-purpose',q:'5 lb bag'},
+    {n:'Baking powder',q:'check stock'},
+    {n:'Taco seasoning packets',q:'6'},
+    {n:'Ranch seasoning packets',q:'4'},
+    {n:'Pizza / marinara sauce jars',q:'6'},
+    {n:'Canned diced tomatoes',q:'4 cans'},
+    {n:'Chicken broth cartons',q:'4'},
+    {n:'Soy sauce',q:'1 bottle'},
+    {n:'Olive oil',q:'1 large bottle'},
+    {n:'Garlic powder, Italian seasoning',q:'check stock'},
+    {n:'Maple syrup',q:'1 large bottle'},
+    {n:'Honey',q:'2–3 bears'},
+    {n:'Brown sugar',q:'1 bag'},
+    {n:'Granola',q:'2 bags'},
+    {n:'Peanut butter',q:'2 large jars'},
+    {n:'Crackers',q:'2 boxes'},
+    {n:'Pretzels',q:'2 bags'},
+    {n:'Peanut butter pretzels',q:'2 bags'},
+    {n:'Flour tortillas (freeze)',q:'2 packs'},
+  ],
+  fresh:[
+    {n:'4% Fage Greek yogurt large tub',q:'2 tubs'},
+    {n:'Blueberries (fresh)',q:'1 pint'},
+    {n:'Bananas (peel & freeze 2–3)',q:'1 bunch'},
+    {n:'Apples',q:'1 bag'},
+    {n:'Roma tomatoes',q:'4–5'},
+  ],
+  target:[
+    {n:'Chobani blended yogurt drinks',q:'6–8 bottles'},
+    {n:'Hoagie rolls (freeze)',q:'1 pack'},
+    {n:'Sour cream',q:'1 tub'},
+    {n:'Salsa',q:'2 jars'},
+    {n:'Vanilla extract (if low)',q:'1 bottle'},
+  ]
+};
+
+let gid=0;
+function makeGItem(item){
+  const id='g'+(gid++);
+  return `<div class="g-item" id="${id}" onclick="this.classList.toggle('checked')">
+    <div class="g-check"><svg class="cksvg" viewBox="0 0 10 10"><use href="#ck"/></svg></div>
+    <span>${item.n}</span><span class="g-qty">${item.q}</span>
+  </div>`;
+}
+
+function buildGrocery(){
+  document.getElementById('ga-meat').innerHTML=groceryData.meat.map(makeGItem).join('');
+  document.getElementById('ga-frozen').innerHTML=groceryData.frozen.map(makeGItem).join('');
+  document.getElementById('ga-dairy').innerHTML=groceryData.dairy.map(makeGItem).join('');
+  document.getElementById('ga-dry').innerHTML=groceryData.dry.map(makeGItem).join('');
+  document.getElementById('ga-fresh').innerHTML=groceryData.fresh.map(makeGItem).join('');
+  document.getElementById('g-target').innerHTML=groceryData.target.map(makeGItem).join('');
+}
+
+function showTab(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+renderMeals('all');
+renderKids();
+buildGrocery();
 </script>
-</body>
-</html>
